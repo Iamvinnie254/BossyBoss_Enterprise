@@ -3,7 +3,7 @@
 # They define how model instances are converted to JSON and vice versa.
 
 from rest_framework import serializers
-from .models import User, CustomerProfile
+from .models import User, CustomerProfile, Profile
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,3 +26,14 @@ class CustomerProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomerProfile
         fields = '__all__'
+
+# Serializer for the extended Profile model
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = (
+            "phone_number",
+            "address",
+            "city",
+            "country",
+        )

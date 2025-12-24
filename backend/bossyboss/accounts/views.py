@@ -6,7 +6,7 @@ from rest_framework import status
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated
 
-from .serializers import RegisterSerializer
+from .serializers import RegisterSerializer, ProfileSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your views here.
@@ -34,9 +34,5 @@ class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user = request.user
-        return Response({
-            "email": user.email,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-        })
+        serializer = ProfileSerializer(request.user.profile)
+        return Response(serializer.data)
