@@ -7,9 +7,19 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class ProductListSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
 
     class Meta:
         model = Product
         fields = '__all__'
+
+
+# Detailed serializer including stock information
+class ProductDetailSerializer(serializers.ModelSerializer):
+    category = CategorySerializer()
+    stock = serializers.IntegerField(source="inventory.quantity")
+
+    class Meta:
+        model = Product
+        fields = "__all__"
