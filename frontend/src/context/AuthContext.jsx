@@ -1,6 +1,5 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 import api from "../services/api";
-import { useNavigate } from "react-router-dom";
 
 export const AuthContext = createContext();
 
@@ -11,40 +10,46 @@ export const AuthProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : null;
   });
 
-  const navigate = useNavigate();
+  // Fetch profile if token exists
+  useEffect(() => {
+    if (tokens?.access) {
+      fetchProfile();
+    }
+  }, [tokens]);
+
+  const fetchProfile = async () => {
+    try {
+      const res = await api.get("/accounts/profile/");
+      setUser(res.data);
+    } catch (err) {
+      console.error("Profile fetch failed");
+      logout();
+    }
+  };
 
   const login = async (email, password) => {
-    try {
-      const response = await api.post("/accounts/login/", { email, password });
-      const data = response.data;
-      localStorage.setItem("tokens", JSON.stringify(data));
-      setTokens(data);
-      setUser(data.user); // optional: store user details
-      navigate("/profile"); // redirect after login
-    } catch (error) {
-      console.error(error.response?.data || error.message);
-      alert("Login failed! Check your credentials.");
-    }
+    const res = await api.post("/accounts/login/", { email, password });
+    localStorage.setItem("tokens", JSON.stringify(res.data));
+    setTokens(res.data);
   };
 
   const register = async (full_name, email, phone, password) => {
-    try {
-      await api.post("/accounts/register/", {
-        full_name,
-        email,
-        phone,
-        password,
-      });
-      alert("Registration successful! Please login.");
-      navigate("/login"); // redirect after registration
-    } catch (error) {
-      console.error(error.response?.data || error.message);
-      alert("Registration failed!");
-    }
+    await api.post("/accounts/register/", {
+      full_name,
+      email,
+      phone,
+      password,
+    });
+  };
+
+  const logout = () => {
+    localStorage.removeItem("tokens");
+    setTokens(null);
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, tokens, login, register }}>
+    <AuthContext.Provider value={{ user, tokens, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
