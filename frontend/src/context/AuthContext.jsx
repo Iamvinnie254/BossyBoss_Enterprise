@@ -1,10 +1,12 @@
 import { createContext, useState, useEffect } from "react";
 import api from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
   const [tokens, setTokens] = useState(() => {
     const saved = localStorage.getItem("tokens");
     return saved ? JSON.parse(saved) : null;
@@ -46,6 +48,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("tokens");
     setTokens(null);
     setUser(null);
+    navigate("/login");
   };
 
   return (
