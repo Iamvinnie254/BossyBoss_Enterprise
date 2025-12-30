@@ -6,18 +6,12 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const navigate = useNavigate();
   const [tokens, setTokens] = useState(() => {
     const saved = localStorage.getItem("tokens");
     return saved ? JSON.parse(saved) : null;
   });
 
-  // Fetch profile if token exists
-  useEffect(() => {
-    if (tokens?.access) {
-      fetchProfile();
-    }
-  }, [tokens]);
+  const navigate = useNavigate();
 
   const fetchProfile = async () => {
     try {
@@ -25,7 +19,6 @@ export const AuthProvider = ({ children }) => {
       setUser(res.data);
     } catch (err) {
       console.error("Profile fetch failed");
-      logout();
     }
   };
 
@@ -33,26 +26,23 @@ export const AuthProvider = ({ children }) => {
     const res = await api.post("/accounts/login/", { email, password });
     localStorage.setItem("tokens", JSON.stringify(res.data));
     setTokens(res.data);
-  };
-
-  const register = async (full_name, email, phone, password) => {
-    await api.post("/accounts/register/", {
-      full_name,
-      email,
-      phone,
-      password,
-    });
+    await fetchProfile();
+    navigate("/profile");
   };
 
   const logout = () => {
-    localStorage.removeItem("tokens");
-    setTokens(null);
     setUser(null);
+    setTokens(null);
+    localStorage.removeItem("tokens");
     navigate("/login");
   };
 
+  useEffect(() => {
+    if (tokens) fetchProfile();
+  }, [tokens]);
+
   return (
-    <AuthContext.Provider value={{ user, tokens, login, register, logout }}>
+    <AuthContext.Provider value={{ user, setUser, login, logout, tokens}}>
       {children}
     </AuthContext.Provider>
   );
