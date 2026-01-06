@@ -1,9 +1,14 @@
-import React from 'react'
+import React from "react";
+import HeroSection from "../components/home/HeroSection";
+import CategoryGrid from "../components/home/CategoryGrid";
 
 const Home = () => {
   return (
-    <div>Home</div>
-  )
-}
+    <>
+      <HeroSection />
+      <CategoryGrid />
+    </>
+  );
+};
 
-export default Home
+export default Home;

@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setTokens(null);
     localStorage.removeItem("tokens");
-    navigate("/login");
+    navigate("/Hapo chonjo");
   };
 
   useEffect(() => {

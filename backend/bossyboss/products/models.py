@@ -6,6 +6,7 @@ from django.db import models
 # Category model
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    image = models.ImageField(upload_to='categories/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(unique=True, blank=True, null=True, max_length=255)
 
